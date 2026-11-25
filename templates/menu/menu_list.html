@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Menu - Campus Cafeteria{% endblock %}
+{% block content %}
+<h1>Today's menu</h1>
+<p class="lead">Check what is available before you walk over.</p>
+
+<form method="get" class="filters" role="search">
+  <div class="field">
+    <label for="q">Search by name</label>
+    <input id="q" name="q" type="search" value="{{ q }}" placeholder="For example: biryani">
+  </div>
+  <div class="field">
+    <label for="category">Category</label>
+    <select id="category" name="category">
+      <option value="">All categories</option>
+      {% for value, label in categories %}
+        <option value="{{ value }}" {% if value == selected_category %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="tag">Dietary need</label>
+    <select id="tag" name="tag">
+      <option value="">Any</option>
+      {% for t in tags %}
+        <option value="{{ t }}" {% if t == selected_tag %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="btn" type="submit">Apply filters</button>
+  <a class="btn secondary" href="{% url 'menu_list' %}">Clear</a>
+</form>
+
+{% regroup items by get_category_display as groups %}
+{% for group in groups %}
+  <section class="board-section">
+    <h2>{{ group.grouper }}</h2>
+    {% for item in group.list %}
+      <div class="dish {% if not item.can_order %}is-sold{% endif %}">
+        <div class="dish-line">
+          <span class="dish-name">{{ item.name }}</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="price">৳{{ item.price|floatformat:0 }}</span>
+        </div>
+        {% if item.description %}<p class="dish-desc">{{ item.description }}</p>{% endif %}
+        <div class="badges">
+          {% if item.can_order %}<span class="badge ok">Available</span>{% else %}<span class="badge sold">Sold out</span>{% endif %}
+          {% for tag in item.tag_list %}<span class="badge">{{ tag }}</span>{% endfor %}
+        </div>
+        {% if user.is_student and item.can_order %}
+          <form method="post" action="{% url 'cart_add' item.pk %}" class="add-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn small" type="submit">Add to cart</button>
+          </form>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
+{% empty %}
+  <div class="empty">
+    <p>No items match your search.</p>
+    <a class="btn secondary" href="{% url 'menu_list' %}">Clear filters</a>
+  </div>
+{% endfor %}
+{% endblock %}

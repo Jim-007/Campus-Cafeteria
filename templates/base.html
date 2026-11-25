@@ -1,0 +1,50 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Campus Cafeteria{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="{% url 'home' %}">Campus Cafeteria</a>
+      <nav class="nav" aria-label="Main">
+        {% if user.is_authenticated %}
+          {% if user.is_student %}
+            <a href="{% url 'menu_list' %}">Menu</a>
+            <a href="{% url 'cart' %}">Cart{% if cart_count %}<span class="badge-count">{{ cart_count }}</span>{% endif %}</a>
+            <a href="{% url 'order_list' %}">My orders</a>
+          {% else %}
+            <a href="{% url 'queue' %}">Order queue</a>
+            <a href="{% url 'menu_list' %}">Menu</a>
+            {% if user.is_owner %}
+              <a href="{% url 'manage_menu' %}">Manage menu</a>
+              <a href="{% url 'reports' %}">Reports</a>
+            {% endif %}
+          {% endif %}
+          <a href="{% url 'notifications' %}">Alerts{% if unread_count %}<span class="badge-count">{{ unread_count }}</span>{% endif %}</a>
+          <span class="who">{{ user.get_full_name|default:user.username }} · {{ user.get_role_display }}</span>
+          <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button type="submit">Sign out</button></form>
+        {% else %}
+          <a href="{% url 'login' %}">Sign in</a>
+          <a href="{% url 'register' %}">Create account</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      {% for message in messages %}
+        <div class="msg {{ message.tags }}" role="status">{{ message }}</div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+  <script src="{% static 'js/refresh.js' %}"></script>
+</body>
+</html>

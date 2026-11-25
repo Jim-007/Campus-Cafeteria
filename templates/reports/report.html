@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Reports - Campus Cafeteria{% endblock %}
+{% block content %}
+<div class="row between">
+  <h1>Sales report</h1>
+  <div class="row">
+    {% for value, label in ranges.items %}
+      <a class="btn {% if value != days %}secondary{% endif %} small" href="?days={{ value }}">{{ label }}</a>
+    {% endfor %}
+    <a class="btn secondary small" href="?days={{ days }}&export=csv">Download CSV</a>
+  </div>
+</div>
+<div class="grid2">
+  <div class="panel"><div class="muted">Revenue</div><div class="stat">৳{{ revenue|floatformat:0 }}</div></div>
+  <div class="panel"><div class="muted">Orders</div><div class="stat">{{ order_count }}</div><div class="muted small">{{ cancelled_count }} cancelled</div></div>
+</div>
+<div class="grid2">
+  <div class="panel">
+    <h2>Top items</h2>
+    {% for t in top_items %}
+      <div class="row between small"><span>{{ t.item__name }}</span><span>{{ t.qty }} sold · ৳{{ t.money|floatformat:0 }}</span></div>
+      <div class="bar"><span style="width: {{ t.width }}%"></span></div><p></p>
+    {% empty %}<p class="muted">No sales in this period yet.</p>{% endfor %}
+  </div>
+  <div class="panel">
+    <h2>Busiest hours</h2>
+    {% for h in peak_hours %}<div class="row between small"><span>{{ h.hour }}:00</span><span>{{ h.n }} order{{ h.n|pluralize }}</span></div>{% empty %}<p class="muted">No orders yet.</p>{% endfor %}
+    <h2 style="margin-top:1rem">Payment methods</h2>
+    {% for p in pay_split %}<div class="row between small"><span>{{ p.name }}</span><span>{{ p.n }} · ৳{{ p.money|floatformat:0 }}</span></div>{% empty %}<p class="muted">No payments yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}
