@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Order queue - Campus Cafeteria{% endblock %}
+{% block content %}
+<h1>Order queue</h1>
+<p class="lead">Sorted by pickup time. This page refreshes every 8 seconds and beeps for a new order.</p>
+<div data-refresh-url="{% url 'queue_partial' %}" data-refresh-seconds="8">
+  {% include 'kitchen/_queue.html' %}
+</div>
+{% endblock %}

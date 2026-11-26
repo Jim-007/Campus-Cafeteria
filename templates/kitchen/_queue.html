@@ -1,0 +1,32 @@
+<span data-new-count="{{ new_count }}" hidden></span>
+{% if new_count %}<div class="banner">{{ new_count }} new order{{ new_count|pluralize }} waiting to be accepted.</div>{% endif %}
+{% for order in orders %}
+  <div class="panel order-card {% if order.status == 'placed' %}new{% elif order.status == 'ready' %}is-ready{% endif %}">
+    <div class="row between">
+      <h2>Order #{{ order.pk }} · pickup {{ order.slot.start_time|time:"H:i" }}</h2>
+      <span class="pill s-{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+    <p class="muted small">{{ order.user.get_full_name|default:order.user.username }}{% if order.user.student_id %} · ID {{ order.user.student_id }}{% endif %} · {{ order.payment.get_method_display }} ({{ order.payment.get_status_display }}) · ৳{{ order.total|floatformat:0 }}</p>
+    <ul>
+      {% for line in order.lines.all %}<li>{{ line.quantity }} × {{ line.item.name }}{% if line.item.dietary_tags %} <span class="muted small">({{ line.item.dietary_tags }})</span>{% endif %}</li>{% endfor %}
+    </ul>
+    {% if order.special_instructions %}<p><strong>Note:</strong> {{ order.special_instructions }}</p>{% endif %}
+    <div class="row">
+      {% if order.status == 'placed' %}
+        <form method="post" action="{% url 'order_action' order.pk %}">{% csrf_token %}<button class="btn small" name="action" value="accept">Accept</button></form>
+      {% elif order.status == 'accepted' %}
+        <form method="post" action="{% url 'order_action' order.pk %}">{% csrf_token %}<button class="btn small" name="action" value="prepare">Start preparing</button></form>
+      {% elif order.status == 'preparing' %}
+        <form method="post" action="{% url 'order_action' order.pk %}">{% csrf_token %}<button class="btn small" name="action" value="ready">Mark ready</button></form>
+      {% elif order.status == 'ready' %}
+        <form method="post" action="{% url 'order_action' order.pk %}">{% csrf_token %}<button class="btn small" name="action" value="collect">Handed over</button></form>
+      {% endif %}
+      <form method="post" action="{% url 'kitchen_cancel' order.pk %}" class="row">{% csrf_token %}
+        <input class="qty" style="width:11rem" type="text" name="reason" placeholder="Reason to cancel" aria-label="Reason to cancel order {{ order.pk }}">
+        <button class="btn secondary danger small" type="submit">Cancel</button>
+      </form>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty"><p>No open orders. New orders appear here by themselves.</p></div>
+{% endfor %}
