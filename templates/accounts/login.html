@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Sign in - Campus Cafeteria{% endblock %}
+{% block content %}
+<h1>Sign in</h1>
+<p class="lead">Order ahead and skip the counter queue.</p>
+<form method="post" class="form-box" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="msg error" role="alert">Username or password is wrong. Check both and try again.</div>{% endif %}
+  <div class="field">
+    <label for="{{ form.username.id_for_label }}">Username</label>
+    {{ form.username }}
+  </div>
+  <div class="field">
+    <label for="{{ form.password.id_for_label }}">Password</label>
+    {{ form.password }}
+  </div>
+  <button class="btn" type="submit">Sign in</button>
+  <p class="help">No account yet? <a href="{% url 'register' %}">Create one</a>.</p>
+</form>
+{% endblock %}
