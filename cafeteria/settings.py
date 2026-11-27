@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(jjo%_w3o*z71s3+5i*y*s7gy!(7jxsx463owc1l!8fwnocrtl'
+SECRET_KEY = 'django-insecure-_8j9k$o7sc)$y@xt(ccyop68m$^vljuw+8h-ad0mu3bc2z0wca'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -63,6 +63,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
+                'accounts.context.nav_counts',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -129,3 +130,20 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+# --- Project settings ---
+AUTH_USER_MODEL = 'accounts.User'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+
+# Staff and owners must enter this code when they register (change it before demo day).
+STAFF_ACCESS_CODE = 'CAFE2026'
+
+# Pickup slots
+SLOT_MINUTES = 30
+SLOT_COUNT = 8
+SLOT_MAX_ORDERS = 10
+NO_SHOW_GRACE_MINUTES = 10
