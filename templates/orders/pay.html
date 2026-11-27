@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Pay for order #{{ order.pk }} - Campus Cafeteria{% endblock %}
+{% block content %}
+<h1>Pay for order #{{ order.pk }}</h1>
+<div class="panel form-box">
+  <p>Method: <strong>{{ order.payment.get_method_display }}</strong></p>
+  <p>Amount: <strong>৳{{ order.payment.amount|floatformat:0 }}</strong></p>
+  <p class="muted small">This page stands in for the real payment gateway. Choose the result you want to test.</p>
+  <form method="post" class="row">
+    {% csrf_token %}
+    <button class="btn" type="submit" name="action" value="pay">Pay now</button>
+    <button class="btn secondary danger" type="submit" name="action" value="fail">Simulate failed payment</button>
+  </form>
+</div>
+{% endblock %}
