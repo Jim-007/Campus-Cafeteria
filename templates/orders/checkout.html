@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Checkout - Campus Cafeteria{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+<form method="post">
+  {% csrf_token %}
+  <div class="grid2">
+    <div>
+      <div class="panel">
+        <h2>1. Pickup time</h2>
+        {% for slot in slots %}
+          <label class="slot {% if slot.is_full %}full{% endif %}">
+            <input type="radio" name="slot" value="{{ slot.pk }}" {% if slot.is_full %}disabled{% endif %} {% if slot.pk == chosen_slot %}checked{% endif %}>
+            <span>{{ slot.start_time|time:"H:i" }} to {{ slot.end_time|time:"H:i" }}</span>
+            <span class="muted small">{% if slot.is_full %}Full{% else %}{{ slot.remaining }} places left{% endif %}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <div class="panel">
+        <h2>2. Payment</h2>
+        {% for value, label in methods %}
+          <label class="slot">
+            <input type="radio" name="method" value="{{ value }}" {% if value == chosen_method %}checked{% endif %}>
+            <span>{{ label }}</span>
+          </label>
+        {% endfor %}
+        <p class="muted small">Online payment is simulated in this project.</p>
+      </div>
+      <div class="panel">
+        <h2>3. Notes (optional)</h2>
+        <div class="field">
+          <label for="instructions">Special instructions, for example allergies</label>
+          <textarea id="instructions" name="instructions" rows="2" maxlength="200">{{ instructions }}</textarea>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Your order</h2>
+        {% for line in lines %}
+          <div class="row between"><span>{{ line.quantity }} × {{ line.item.name }}</span><span>৳{{ line.line_total|floatformat:0 }}</span></div>
+        {% endfor %}
+        <hr>
+        <div class="row between"><strong>Total</strong><strong>৳{{ total|floatformat:0 }}</strong></div>
+        <p></p>
+        <button class="btn" type="submit">Place order</button>
+        <a class="btn secondary" href="{% url 'cart' %}">Back to cart</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

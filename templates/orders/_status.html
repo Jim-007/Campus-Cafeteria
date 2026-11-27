@@ -1,0 +1,11 @@
+<div class="row between">
+  <span class="pill s-{{ order.status }}">{{ order.get_status_display }}</span>
+  <span class="pill s-{{ order.payment.status }}">Payment: {{ order.payment.get_status_display }}</span>
+</div>
+{% if order.progress %}
+<ol class="steps" aria-label="Order progress">
+  {% for step in order.progress %}<li class="{{ step.state }}">{{ step.label }}</li>{% endfor %}
+</ol>
+{% endif %}
+{% if order.status == 'ready' %}<div class="banner">Your food is ready. Show order #{{ order.pk }} at the counter.</div>{% endif %}
+{% if order.status == 'cancelled' %}<p class="error">Cancelled. Reason: {{ order.cancel_reason|default:"not given" }}.</p>{% endif %}
