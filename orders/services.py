@@ -30,10 +30,25 @@ class OrderError(Exception):
 
 @transaction.atomic
 def place_order(user, lines, slot, method, instructions=''):
-    """Create an order from cart lines (FR4, FR5, FR7).
+    """Create an order from cart lines.
 
-    Checks the slot and stock, saves the order, lowers the stock and starts the payment.
-    Counter payments are visible to staff straight away; online ones wait until paid.
+    Checks the slot and stock, saves the order, lowers the stock and
+    starts the payment. Counter payments are visible to staff straight
+    away; online ones wait until paid.
+
+    Args:
+        user: The student placing the order.
+        lines: Cart lines, each with an item and a quantity.
+        slot: The chosen TimeSlot.
+        method: A payment method key such as 'bkash' or 'counter'.
+        instructions: Optional note for the kitchen (max 200 characters).
+
+    Returns:
+        The saved Order.
+
+    Raises:
+        OrderError: If the cart is empty, the slot is full or past, or an
+            item is sold out.
     """
     if not lines:
         raise OrderError('Your cart is empty.')
